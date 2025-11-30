@@ -1,14 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { type SpotifyUser } from "./types/SpotifyUser";
-import { getCurrentUser } from "./services/api";
+import { getCurrentUser, getUserTopTracks } from "./services/api";
 import UserProfile from "./components/UserProfile";
+import { type Track } from "./types/Track";
+import TrackList from "./components/TrackList";
 
 
 function App() {
   const [user, setUser] = useState<SpotifyUser | null>(null);
+  const [tracks, setTracks] = useState<Track[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [activeRange, setActiveRange] = useState('short_term');
+  const [activeLimit, setActiveLimit] = useState(10);
+
+  const ranges = [
+    { label: 'Last Month', value: 'short_term' },
+    { label: 'Last 6 Monthes', value: 'medium_term' },
+    { label: 'All Time', value: 'long_term' },
+
+  ]
+
   const LOGIN_URL = `${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/spotify`;
+
 
 
   useEffect(() => {
@@ -25,7 +39,29 @@ function App() {
     fetchData();
   }, []);
 
-  if(loading) {
+  useEffect(() => {
+    const timeoutId = setTimeout(async () => {
+      if (user && activeLimit > 0 && activeLimit <= 50) {
+        try {
+          const tracksData = await getUserTopTracks(activeRange, activeLimit);
+          setTracks(tracksData);
+        } catch (error) {
+          console.debug("Error fetching tracks", error);
+        }
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [user, activeRange, activeLimit]);
+
+  const handleLimitChange = (e : ChangeEvent<HTMLInputElement>) => {
+    let val = parseInt(e.target.value);
+    if (isNaN(val)) val = 0;
+    if (val > 50) val = 50;
+    setActiveLimit(val);
+  }
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-content">
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-500"></div>
@@ -45,7 +81,7 @@ function App() {
             onClick={() => alert("Logout coming soon")}
             className="text-sm font-semibold text-neutral-400 hover:text-white transition border border-neutral-700 px-4 py-2 rounded-full hover:border-white"
           >
-              Logout
+            Logout
           </button>
         )}
       </nav>
@@ -70,10 +106,55 @@ function App() {
           </div>
         ) : (
           <div className="w-full animate-fade-in-up">
-            <UserProfile user = { user } />
-            <div className="text-center mt-12 text-neutral-500">
-              You will see your fav songs here
+            <UserProfile user={user} />
+
+            { /* RANGE */}
+            <div className="flex flex-col md:flex-row items-center justify-center gap-6 mt-12 mb-8">
+              <div className="flex bg-neutral-900 p-1 rounded-full border border-neutral-800">
+                {ranges.map((range) => (
+                  <button
+                    key={range.value}
+                    onClick={() => setActiveRange(range.value)}
+                    className={`
+                      px-4 py-2 rounded-full text-sm font-bold transition-all duration-300
+                      ${activeRange === range.value
+                        ? 'bg-green-500 text-black shadow-lg'
+                        : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
+                      }
+                    `}
+                  >
+                    {range.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Time Limit */}
+              
+              <div className="flex items-center gap-3 bg-neutral-900 px-4 py-2 rounded-lg border border-neutral-800">
+                <span className="text=neutral-500 text-sm font-bold uppercase tracking-wider">Show:</span>
+
+                <input 
+                  type="number"
+                  min="1"
+                  max="50"
+                  value={activeLimit}
+                  onChange={handleLimitChange}
+                  className="bg-transparent text-white font-bold text-center w-12 border-b-2 border-neutral-600 focus:border-green-500 focus:outline-none transition-colors"
+                />
+
+                <span className="text-neutral-400 text-sm"> Songs</span>
+              </div>
             </div>
+
+            {/* Song List*/}
+
+            {tracks.length > 0 ? (
+              <TrackList tracks={tracks}/>
+            ) : (
+              <div className="text-center mt-10 text-neutral-500">
+                {activeLimit > 0 ? "Loading Songs" : "Pick a number greater than 0"}
+              </div>
+            )}
           </div>
         )}
       </main>

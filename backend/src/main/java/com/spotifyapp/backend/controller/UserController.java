@@ -35,8 +35,8 @@ public class UserController {
             @RequestParam(name = "time_range", defaultValue = "short_term") String timeRange,
             @RequestParam(name = "limit", defaultValue = "10") int limit
             ) {
-        String accesToken = authorizedClient.getAccessToken().getTokenValue();
+        String accessToken = authorizedClient.getAccessToken().getTokenValue();
 
-        return spotifyService.getUserTopTracks(accesToken, timeRange, limit);
+        return spotifyService.getUserTopTracks(accessToken, timeRange, limit);
     }
 }

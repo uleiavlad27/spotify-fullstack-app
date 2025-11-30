@@ -30,6 +30,7 @@ spring:
               - user-read-private
               - user-read-email
               - playlist-read-private
+              - user-top-read
 
         provider:
           spotify:
