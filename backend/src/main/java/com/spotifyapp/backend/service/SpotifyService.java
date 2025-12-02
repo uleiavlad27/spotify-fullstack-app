@@ -1,5 +1,7 @@
 package com.spotifyapp.backend.service;
 
+import com.spotifyapp.backend.dto.Album;
+import com.spotifyapp.backend.dto.Artist;
 import com.spotifyapp.backend.dto.Track;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +25,10 @@ public class SpotifyService {
         this.restClient = RestClient.create();
         this.objectMapper = new ObjectMapper();
     }
+
+
+
+    // USER'S TOP TRACKS
 
     public List<Track> getUserTopTracks(String accessToken, String timeRange, int limit){
         log.debug("Fetching top {} tracks with range: {}", limit, timeRange);
@@ -73,4 +79,114 @@ public class SpotifyService {
         }
         return tracks;
     }
+
+
+
+    // USER'S TOP ARTISTS
+
+
+    public List<Artist> getUserTopArtist(String accessToken, String timeRange, int limit){
+        log.debug("Fetching top {} top artists with range: {}", limit, timeRange);
+
+        try{
+            String jsonResponse = restClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .scheme("https")
+                            .host("api.spotify.com")
+                            .path("/v1/me/top/artists")
+                            .queryParam("time_range", timeRange)
+                            .queryParam("limit", String.valueOf(limit))
+                            .build())
+                    .header("Authorization", "Bearer " + accessToken)
+                    .retrieve()
+                    .body(String.class);
+            return parseArtistsFromJson(jsonResponse);
+        } catch(Exception e){
+            log.error("ERROR fetching albums", e);
+            return List.of();
+        }
+    }
+
+    public List<Artist> parseArtistsFromJson(String jsonResponse) throws Exception {
+        List<Artist> artists = new ArrayList<>();
+        JsonNode root = objectMapper.readTree(jsonResponse);
+        if(root.has("items")) {
+            for(JsonNode item : root.path("items")) {
+
+                String id = item.path("id").asText();
+                String name = item.path("name").asText();
+
+                List<String> genres = new ArrayList<>();
+                if(item.has("genres") && !item.path("genres").isEmpty()) {
+                    for(JsonNode genre : item.path("genres")) {
+                        genres.add(genre.asText());
+                    }
+                }
+                String imageUrl = "";
+                if(item.has("images") && !item.path("images").isEmpty()){
+                    imageUrl = item.path("images").get(0).path("url").asText();
+                }
+                String spotifyUrl = "";
+                if(item.has("external_urls") && !item.path("external_urls").isEmpty()){
+                    spotifyUrl = item.path("external_urls").path("spotify").asText();
+                }
+
+                artists.add(new Artist(id, name, genres, imageUrl, spotifyUrl));
+            }
+        }
+        return artists;
+    }
+
+    // ALBUMS FROM AN ARTIST
+
+    public List<Album> getAlbumsFromArtist(String accessToken, String artistId){
+        log.debug("Fetching albums from artist with id: {}", artistId);
+
+        try {
+            String jsonResponse = restClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .scheme("https")
+                            .host("api.spotify.com")
+                            .path("/v1/artist/" + artistId + "/albums")
+                            .queryParam("limit", "3")
+                            .build())
+                    .header("Authorization", "Bearer " + accessToken)
+                    .retrieve()
+                    .body(String.class);
+
+            return parseAlbumsFromJson(jsonResponse);
+        } catch (Exception e){
+            log.error("Error fetching albums from artist", e);
+            return List.of();
+        }
+    }
+
+    public List<Album> parseAlbumsFromJson(String jsonResponse) throws Exception{
+        List<Album> albums = new ArrayList<>();
+        JsonNode root = objectMapper.readTree(jsonResponse);
+        if(root.has("items")){
+            for(JsonNode item: root.path("items")){
+                String name = item.path("name").asText();
+
+                String artist = "Unknown";
+                if(item.has("artists") && !item.path("artists").isEmpty()){
+                    artist = item.path("artists").get(0).path("name").asText();
+                }
+
+                String imageUrl = "";
+                if(item.has("images") && !item.path("images").isEmpty()){
+                    imageUrl = item.path("images").get(0).path("url").asText();
+                }
+                String spotifyUrl = item.path("external_urls").path("spotify").asText();
+
+                String releaseDate = item.path("release_date").asText();
+
+                albums.add(new Album(name, artist, imageUrl, spotifyUrl, releaseDate));
+            }
+        }
+        return albums;
+    }
+
+
+
 }
