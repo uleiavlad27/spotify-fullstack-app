@@ -39,3 +39,7 @@ export const getArtistsAlbums = async (artistId: string) => {
     const response = await apiClient.get<Album[]>(`/api/${artistId}/albums`);
     return response.data;
 }
+
+export const logoutUser = async () => {
+    await apiClient.post('/api/logout');
+}

@@ -18,7 +18,6 @@ import java.util.List;
 public class SecurityConfig {
 
     public SecurityConfig() {
-        System.out.println(">>> 🚨 SECURITY CONFIG SE INCARCA! 🚨 <<<");
     }
 
     @Bean
@@ -35,8 +34,17 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler((request, response, authentication) -> {
-                            response.sendRedirect("https://localhost:5173");
+                            response.sendRedirect("http://127.0.0.1:5173");
                         })
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/api/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(200);
+                        })
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll()
                 );
 
         return http.build();
@@ -45,7 +53,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("https://localhost:5173"));
+        configuration.setAllowedOriginPatterns(List.of("http://127.0.0.1:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
