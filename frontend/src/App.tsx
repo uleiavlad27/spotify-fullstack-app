@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import TopTracks from "./pages/TopTracks";
 import Navbar from "./components/Navbar";
 import UserProfile from "./components/UserProfile";
+import TopArtists from "./pages/TopArtists";
 
 function App() {
 
@@ -52,8 +53,9 @@ function App() {
 
               <Routes>
                 <Route path="/" element={<TopTracks />} />
-                <Route path="/artists" element={<TopTracks />} />
-                <Route path="/albums" element={<TopTracks />} />
+                <Route path="/top-tracks" element={<TopTracks /> } />
+                <Route path="/top-artists" element={<TopArtists />} />
+                <Route path="/top-albums" element={<TopTracks />} />
               </Routes>
             </main>
           </>

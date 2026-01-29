@@ -37,7 +37,6 @@ export default function TopTracks() {
 
     return (
         <div className="w-full animate-fade-in-up pb-20">
-            {/* Controalele (Butoane + Input) */}
             <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-8">
                 <div className="flex bg-neutral-900 p-1 rounded-full border border-neutral-800">
                     {ranges.map((range) => (

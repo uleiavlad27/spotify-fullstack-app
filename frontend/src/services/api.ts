@@ -3,7 +3,7 @@ import { type Track } from "../types/Track";
 import { type Album } from "../types/Album"
 import { type Artist } from "../types/Artist";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:8080';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8080';
 
 export const apiClient = axios.create({
     baseURL: BASE_URL,
@@ -36,7 +36,7 @@ export const getUserTopArtist = async (timeRange = 'short_term', limit = 10) => 
 }
 
 export const getArtistsAlbums = async (artistId: string) => {
-    const response = await apiClient.get<Album[]>(`/api/${artistId}/albums`);
+    const response = await apiClient.get<Album[]>(`/api/artist/${artistId}/albums`);
     return response.data;
 }
 

@@ -85,7 +85,7 @@ public class SpotifyService {
     // USER'S TOP ARTISTS
 
 
-    public List<Artist> getUserTopArtist(String accessToken, String timeRange, int limit){
+    public List<Artist> getUserTopArtists(String accessToken, String timeRange, int limit){
         log.debug("Fetching top {} top artists with range: {}", limit, timeRange);
 
         try{
@@ -102,7 +102,7 @@ public class SpotifyService {
                     .body(String.class);
             return parseArtistsFromJson(jsonResponse);
         } catch(Exception e){
-            log.error("ERROR fetching albums", e);
+            log.error("ERROR fetching artists", e);
             return List.of();
         }
     }
@@ -147,8 +147,9 @@ public class SpotifyService {
                     .uri(uriBuilder -> uriBuilder
                             .scheme("https")
                             .host("api.spotify.com")
-                            .path("/v1/artist/" + artistId + "/albums")
-                            .queryParam("limit", "3")
+                            .path("/v1/artists/" + artistId + "/albums")
+                            .queryParam("limit", "50")
+                            .queryParam("include_groups", "album,single")
                             .build())
                     .header("Authorization", "Bearer " + accessToken)
                     .retrieve()

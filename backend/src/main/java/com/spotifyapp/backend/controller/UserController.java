@@ -47,7 +47,7 @@ public class UserController {
     ) {
         String accessToken = authorizedClient.getAccessToken().getTokenValue();
 
-        return spotifyService.getUserTopArtist(accessToken, timeRange, limit);
+        return spotifyService.getUserTopArtists(accessToken, timeRange, limit);
     }
 
     @GetMapping("/artist/{artistId}/albums")
