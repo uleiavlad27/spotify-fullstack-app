@@ -3,5 +3,6 @@ export interface Track {
     artist: string,
     album: string,
     imageUrl: string,
-    spotifyUrl: string
+    spotifyUrl: string,
+    previewUrl: string | null
 }

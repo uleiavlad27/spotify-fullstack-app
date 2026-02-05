@@ -23,7 +23,7 @@ export default function Navbar() {
             <div className="flex items-center gap-6">
                 <Link to="/" className=" text-neutral-400 hover:text-white font-medium transition">Top Tracks</Link>
                 <Link to="/top-artists" className=" text-neutral-400 hover:text-white font-medium transition">Top Artists</Link>
-                <Link to="/albums" className=" text-neutral-400 hover:text-white font-medium transition">Top Albums</Link>
+                <Link to="/top-albums" className=" text-neutral-400 hover:text-white font-medium transition">Top Albums</Link>
                 <button
                     onClick={handleLogout}
                     className="text-sm font-semibold text-black bg-white px-4 py-2 rounded-full hover:bg-neutral-200 transition"

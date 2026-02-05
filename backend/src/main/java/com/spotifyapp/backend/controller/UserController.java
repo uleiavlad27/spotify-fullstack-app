@@ -1,6 +1,7 @@
 package com.spotifyapp.backend.controller;
 
 import com.spotifyapp.backend.dto.Album;
+import com.spotifyapp.backend.dto.AlbumStats;
 import com.spotifyapp.backend.dto.Artist;
 import com.spotifyapp.backend.dto.Track;
 import com.spotifyapp.backend.service.SpotifyService;
@@ -59,5 +60,16 @@ public class UserController {
 
         return spotifyService.getAlbumsFromArtist(accessToken, artistId);
     }
+
+    @GetMapping("/user/top-albums")
+    public List<AlbumStats> getTopAlbums(
+            @RegisteredOAuth2AuthorizedClient("spotify") OAuth2AuthorizedClient authorizedClient,
+            @RequestParam(name = "time_range", defaultValue = "short-term") String timeRange
+    ) {
+        String accessToken = authorizedClient.getAccessToken().getTokenValue();
+
+        return spotifyService.getTopAlbums(accessToken, timeRange);
+    }
+
 
 }

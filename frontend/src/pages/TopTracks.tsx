@@ -56,7 +56,7 @@ export default function TopTracks() {
                 </div>
             </div>
 
-            {/* Lista */}
+           
             {tracks.length > 0 ? (
                 <TrackList tracks={tracks} />
             ) : (

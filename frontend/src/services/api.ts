@@ -2,6 +2,7 @@ import axios from "axios";
 import { type Track } from "../types/Track";
 import { type Album } from "../types/Album"
 import { type Artist } from "../types/Artist";
+import { type AlbumStats } from "../types/AlbumStats";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8080';
 
@@ -39,6 +40,16 @@ export const getArtistsAlbums = async (artistId: string) => {
     const response = await apiClient.get<Album[]>(`/api/artist/${artistId}/albums`);
     return response.data;
 }
+
+export const getUserTopAlbums = async (timeRange = 'short_term') => {
+    const response = await apiClient.get<AlbumStats[]>('/api/user/top-albums', {
+        params: {
+            time_range: timeRange
+        }
+    });
+    return response.data;
+}
+
 
 export const logoutUser = async () => {
     await apiClient.post('/api/logout');

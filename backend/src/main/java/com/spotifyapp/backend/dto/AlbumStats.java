@@ -1,11 +1,9 @@
 package com.spotifyapp.backend.dto;
 
-public record Track(
-        String name,
+public record AlbumStats(
+        String albumName,
         String artist,
-        String album,
         String imageUrl,
         String spotifyUrl,
-        String previewUrl
-) {
-}
+        long trackCount
+) {}

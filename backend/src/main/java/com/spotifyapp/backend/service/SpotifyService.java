@@ -3,6 +3,7 @@ package com.spotifyapp.backend.service;
 import com.spotifyapp.backend.dto.Album;
 import com.spotifyapp.backend.dto.Artist;
 import com.spotifyapp.backend.dto.Track;
+import com.spotifyapp.backend.dto.AlbumStats;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class SpotifyService {
@@ -74,7 +77,13 @@ public class SpotifyService {
 
                 String spotifyUrl = item.path("external_urls").path("spotify").asText();
 
-                tracks.add(new Track(name, artist, album, imageUrl, spotifyUrl));
+
+
+                String previewUrl = null;
+                if(item.has("preview_url") && !item.path("preview_url").isNull()) {
+                    previewUrl = item.path("preview_url").asText();
+                }
+                tracks.add(new Track(name, artist, album, imageUrl, spotifyUrl, previewUrl));
             }
         }
         return tracks;
@@ -186,6 +195,28 @@ public class SpotifyService {
             }
         }
         return albums;
+    }
+
+    // TOP ALBUMS
+    public List<AlbumStats> getTopAlbums(String accessToken, String timeRange) {
+        List<Track> tracks = getUserTopTracks(accessToken, timeRange, 50);
+        Map<String, List<Track>> albumsMap = tracks.stream()
+                .collect(Collectors.groupingBy(Track::album));
+        List<AlbumStats> topAlbums = new ArrayList<>();
+
+        for(Map.Entry<String, List<Track>> entry : albumsMap.entrySet()) {
+            List<Track> tracksInAlbum = entry.getValue();
+            Track firstTrack = tracksInAlbum.get(0);
+            topAlbums.add(new AlbumStats(
+                    firstTrack.album(),
+                    firstTrack.artist(),
+                    firstTrack.imageUrl(),
+                    firstTrack.spotifyUrl(),
+                    tracksInAlbum.size()
+            ));
+        }
+        topAlbums.sort((a, b) -> Long.compare(b.trackCount(), a.trackCount()));
+        return topAlbums;
     }
 
 
