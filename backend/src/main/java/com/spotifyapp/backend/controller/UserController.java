@@ -33,22 +33,24 @@ public class UserController {
     public List<Track> getTopTracks(
             @RegisteredOAuth2AuthorizedClient("spotify") OAuth2AuthorizedClient authorizedClient,
             @RequestParam(name = "time_range", defaultValue = "short_term") String timeRange,
-            @RequestParam(name = "limit", defaultValue = "10") int limit
+            @RequestParam(name = "limit", defaultValue = "10") int limit,
+            @RequestParam(name = "offset", defaultValue = "0") int offset
             ) {
         String accessToken = authorizedClient.getAccessToken().getTokenValue();
 
-        return spotifyService.getUserTopTracks(accessToken, timeRange, limit);
+        return spotifyService.getUserTopTracks(accessToken, timeRange, limit, offset);
     }
 
     @GetMapping("/user/top-artists")
     public List<Artist> getTopArtists(
             @RegisteredOAuth2AuthorizedClient("spotify") OAuth2AuthorizedClient authorizedClient,
             @RequestParam(name = "time_range", defaultValue = "short_term") String timeRange,
-            @RequestParam(name = "limit", defaultValue = "10") int limit
+            @RequestParam(name = "limit", defaultValue = "10") int limit,
+            @RequestParam(name = "offset", defaultValue = "0") int offset
     ) {
         String accessToken = authorizedClient.getAccessToken().getTokenValue();
 
-        return spotifyService.getUserTopArtists(accessToken, timeRange, limit);
+        return spotifyService.getUserTopArtists(accessToken, timeRange, limit, offset);
     }
 
     @GetMapping("/artist/{artistId}/albums")

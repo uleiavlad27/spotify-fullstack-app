@@ -16,21 +16,23 @@ export const getCurrentUser = async () => {
     return response.data;
 }
 
-export const getUserTopTracks = async (timeRange = 'short_term', limit = 10) => {
+export const getUserTopTracks = async (timeRange = 'short_term', limit = 10, offset = 0) => {
     const response = await apiClient.get<Track[]>('/api/user/top-tracks', {
         params: {
             time_range: timeRange,
-            limit: limit
+            limit: limit,
+            offset: offset
         }
     });
     return response.data;
 }
 
-export const getUserTopArtist = async (timeRange = 'short_term', limit = 10) => {
+export const getUserTopArtist = async (timeRange = 'short_term', limit = 10, offset = 0) => {
     const response = await apiClient.get<Artist[]>("/api/user/top-artists", {
         params: { 
             time_range: timeRange,
-            limit : limit
+            limit : limit,
+            offset : offset
         }
     });
     return response.data;

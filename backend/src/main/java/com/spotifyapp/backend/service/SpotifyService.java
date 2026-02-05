@@ -33,7 +33,7 @@ public class SpotifyService {
 
     // USER'S TOP TRACKS
 
-    public List<Track> getUserTopTracks(String accessToken, String timeRange, int limit){
+    public List<Track> getUserTopTracks(String accessToken, String timeRange, int limit, int offset){
         log.debug("Fetching top {} tracks with range: {}", limit, timeRange);
 
         try{
@@ -44,6 +44,7 @@ public class SpotifyService {
                             .path("/v1/me/top/tracks")
                             .queryParam("time_range", timeRange)
                             .queryParam("limit", String.valueOf(limit))
+                            .queryParam("offset", offset)
                             .build())
                     .header("Authorization", "Bearer " + accessToken)
                     .retrieve()
@@ -94,7 +95,7 @@ public class SpotifyService {
     // USER'S TOP ARTISTS
 
 
-    public List<Artist> getUserTopArtists(String accessToken, String timeRange, int limit){
+    public List<Artist> getUserTopArtists(String accessToken, String timeRange, int limit, int offset){
         log.debug("Fetching top {} top artists with range: {}", limit, timeRange);
 
         try{
@@ -105,6 +106,7 @@ public class SpotifyService {
                             .path("/v1/me/top/artists")
                             .queryParam("time_range", timeRange)
                             .queryParam("limit", String.valueOf(limit))
+                            .queryParam("offset", offset)
                             .build())
                     .header("Authorization", "Bearer " + accessToken)
                     .retrieve()
@@ -199,7 +201,7 @@ public class SpotifyService {
 
     // TOP ALBUMS
     public List<AlbumStats> getTopAlbums(String accessToken, String timeRange) {
-        List<Track> tracks = getUserTopTracks(accessToken, timeRange, 50);
+        List<Track> tracks = getUserTopTracks(accessToken, timeRange, 50, 0);
         Map<String, List<Track>> albumsMap = tracks.stream()
                 .collect(Collectors.groupingBy(Track::album));
         List<AlbumStats> topAlbums = new ArrayList<>();
