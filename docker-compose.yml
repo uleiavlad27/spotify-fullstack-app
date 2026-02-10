@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: spotify_postgres_db
+    restart: always
+    environment:
+      - POSTGRES_USER=spotify_user
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=spotify_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data_v8:/var/lib/postgresql/data
+
+volumes:
+  postgres_data_v8:
