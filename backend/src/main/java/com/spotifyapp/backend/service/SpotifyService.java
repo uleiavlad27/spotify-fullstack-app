@@ -24,9 +24,9 @@ public class SpotifyService {
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
 
-    public SpotifyService(){
-        this.restClient = RestClient.create();
-        this.objectMapper = new ObjectMapper();
+    public SpotifyService(RestClient.Builder restClientBuilder, ObjectMapper objectMapper) {
+        this.restClient = restClientBuilder.build();
+        this.objectMapper = objectMapper;
     }
 
 
